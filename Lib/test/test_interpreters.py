@@ -12,6 +12,8 @@ from test import support
 from test.support import import_helper
 from test.support import threading_helper
 from test.support import os_helper
+from security import safe_command
+
 _interpreters = import_helper.import_module('_xxsubinterpreters')
 _channels = import_helper.import_module('_xxinterpchannels')
 from test.support import interpreters
@@ -676,8 +678,7 @@ class StartupTests(TestBase):
             argv = shlex.split(argv)
         argv = [sys.executable, *argv]
         try:
-            proc = subprocess.run(
-                argv,
+            proc = safe_command.run(subprocess.run, argv,
                 cwd=cwd,
                 capture_output=True,
                 text=True,
@@ -756,7 +757,7 @@ class FinalizationTests(TestBase):
             interpid = _interpreters.create()
             raise Exception
             ''']
-        proc = subprocess.run(argv, capture_output=True, text=True)
+        proc = safe_command.run(subprocess.run, argv, capture_output=True, text=True)
         self.assertIn('Traceback', proc.stderr)
         if proc.returncode == 0 and support.verbose:
             print()
