@@ -21,6 +21,7 @@ from sysconfig.__main__ import _main, _parse_makefile
 import _imp
 import _osx_support
 import _sysconfig
+from security import safe_command
 
 
 HAS_USER_BASE = sysconfig._HAS_USER_BASE
@@ -426,7 +427,7 @@ class TestSysConfig(unittest.TestCase):
         if 'MACOSX_DEPLOYMENT_TARGET' in env:
             del env['MACOSX_DEPLOYMENT_TARGET']
 
-        p = subprocess.Popen([
+        p = safe_command.run(subprocess.Popen, [
                 sys.executable, '-c',
                 'import sysconfig; print(sysconfig.get_platform())',
             ],
@@ -445,7 +446,7 @@ class TestSysConfig(unittest.TestCase):
         env = os.environ.copy()
         env['MACOSX_DEPLOYMENT_TARGET'] = '10.1'
 
-        p = subprocess.Popen([
+        p = safe_command.run(subprocess.Popen, [
                 sys.executable, '-c',
                 'import sysconfig; print(sysconfig.get_platform())',
             ],
